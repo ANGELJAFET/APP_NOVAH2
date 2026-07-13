@@ -13,6 +13,26 @@ interface PersonEditViewProps {
   readOnly: boolean;
 }
 
+function hasChanges(person: PersonWithCredentials, payload: PersonFormSubmitPayload): boolean {
+  if (
+    payload.name !== person.name ||
+    payload.address !== person.address ||
+    payload.phoneNumber !== person.phoneNumber ||
+    payload.credentials.length !== person.credentials.length
+  ) {
+    return true;
+  }
+  return payload.credentials.some((credential, index) => {
+    const original = person.credentials[index];
+    return (
+      credential.type !== original.type ||
+      credential.organization !== original.organization ||
+      credential.acquiredCredential !== original.acquiredCredential ||
+      credential.year !== original.year
+    );
+  });
+}
+
 export function PersonEditView({ id, readOnly }: PersonEditViewProps) {
   const router = useRouter();
   const [person, setPerson] = useState<PersonWithCredentials | null>(null);
@@ -48,6 +68,10 @@ export function PersonEditView({ id, readOnly }: PersonEditViewProps) {
   }, [id]);
 
   async function handleSubmit(payload: PersonFormSubmitPayload) {
+    if (person && !hasChanges(person, payload)) {
+      router.push("/persons");
+      return;
+    }
     setSubmitting(true);
     setSubmitError(null);
     try {

@@ -2,6 +2,10 @@ import { PersonEditView } from "./PersonEditView";
 
 export const dynamic = "force-dynamic";
 
+export async function generateStaticParams() {
+  return [];
+}
+
 interface PersonDetailPageProps {
   params: Promise<{ id: string }>;
   searchParams: Promise<{ mode?: string }>;
