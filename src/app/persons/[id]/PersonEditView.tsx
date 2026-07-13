@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Alert } from "@/components/Alert";
 import { PersonForm, PersonFormSubmitPayload } from "@/components/PersonForm";
+import { SuccessModal } from "@/components/SuccessModal";
 import { api, ApiError } from "@/lib/api";
 import { PersonWithCredentials } from "@/types";
 
@@ -19,6 +20,7 @@ export function PersonEditView({ id, readOnly }: PersonEditViewProps) {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -50,7 +52,7 @@ export function PersonEditView({ id, readOnly }: PersonEditViewProps) {
     setSubmitError(null);
     try {
       await api.put<PersonWithCredentials>(`/api/persons/${id}`, payload);
-      router.push("/persons");
+      setShowSuccess(true);
     } catch (err) {
       setSubmitError(err instanceof ApiError ? err.message : "No se pudo actualizar el registro.");
     } finally {
@@ -80,6 +82,12 @@ export function PersonEditView({ id, readOnly }: PersonEditViewProps) {
         onCancel={() => router.push("/persons")}
         submitting={submitting}
         submitError={submitError}
+      />
+      <SuccessModal
+        open={showSuccess}
+        title="Persona actualizada"
+        message="Los cambios se guardaron correctamente."
+        onClose={() => router.push("/persons")}
       />
     </main>
   );

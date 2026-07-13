@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { PersonForm, PersonFormSubmitPayload } from "@/components/PersonForm";
+import { SuccessModal } from "@/components/SuccessModal";
 import { api, ApiError } from "@/lib/api";
 import { PersonWithCredentials } from "@/types";
 
@@ -10,13 +11,14 @@ export default function NewPersonPage() {
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   async function handleSubmit(payload: PersonFormSubmitPayload) {
     setSubmitting(true);
     setSubmitError(null);
     try {
       await api.post<PersonWithCredentials>("/api/persons", payload);
-      router.push("/persons");
+      setShowSuccess(true);
     } catch (err) {
       setSubmitError(err instanceof ApiError ? err.message : "No se pudo guardar el registro.");
     } finally {
@@ -33,6 +35,12 @@ export default function NewPersonPage() {
         onCancel={() => router.push("/persons")}
         submitting={submitting}
         submitError={submitError}
+      />
+      <SuccessModal
+        open={showSuccess}
+        title="Persona creada"
+        message="El registro se guardó correctamente."
+        onClose={() => router.push("/persons")}
       />
     </main>
   );

@@ -25,7 +25,7 @@ export function Modal({ open, title, onClose, children, maxWidthClassName = "max
         className={`w-full ${maxWidthClassName} rounded-lg bg-white p-6 shadow-lg`}
         onClick={stopPropagation}
       >
-        <h2 className="mb-4 text-lg font-semibold">{title}</h2>
+        {title && <h2 className="mb-4 text-lg font-semibold">{title}</h2>}
         {children}
       </div>
     </div>

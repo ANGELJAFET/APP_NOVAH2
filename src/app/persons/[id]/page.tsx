@@ -1,5 +1,7 @@
 import { PersonEditView } from "./PersonEditView";
 
+export const dynamic = "force-dynamic";
+
 interface PersonDetailPageProps {
   params: Promise<{ id: string }>;
   searchParams: Promise<{ mode?: string }>;

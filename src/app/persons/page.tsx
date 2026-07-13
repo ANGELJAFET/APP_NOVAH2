@@ -8,6 +8,7 @@ import { PaginatedResult, Person } from "@/types";
 import { Alert } from "@/components/Alert";
 import { PersonsGrid } from "@/components/PersonsGrid";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { SuccessModal } from "@/components/SuccessModal";
 
 const PAGE_SIZE = 5;
 
@@ -24,6 +25,7 @@ export default function PersonsPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Person | null>(null);
+  const [showDeleteSuccess, setShowDeleteSuccess] = useState(false);
 
   const totalPages = result ? Math.max(1, Math.ceil(result.total / PAGE_SIZE)) : 1;
 
@@ -81,6 +83,7 @@ export default function PersonsPage() {
       await api.delete(`/api/persons/${deleteTarget.id}`);
       setDeleteTarget(null);
       fetchPersons();
+      setShowDeleteSuccess(true);
     } catch {
       setError("No se pudo eliminar el registro.");
       setDeleteTarget(null);
@@ -164,6 +167,13 @@ export default function PersonsPage() {
         message={`¿Está seguro que desea eliminar a "${deleteTarget?.name}"? Esta acción no se puede deshacer.`}
         onCancel={() => setDeleteTarget(null)}
         onConfirm={handleConfirmDelete}
+      />
+
+      <SuccessModal
+        open={showDeleteSuccess}
+        title="Persona eliminada"
+        message="El registro se eliminó correctamente."
+        onClose={() => setShowDeleteSuccess(false)}
       />
     </main>
   );
